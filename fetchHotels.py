@@ -3,11 +3,13 @@ from datetime import timedelta
 from bs4 import BeautifulSoup
 from google import search
 from time import time, localtime, strftime
+import xlsxwriter
 import requests
-import csv
 import sys
 import re
 
+INPUT_FILE = "/Volumes/Dario Porsche LaCie/ALL/Dario's Mac/Documents/Dario MAC Manual Backup (07th May 2017)/Businesses/-Businesses/Actual/SeasonAbroad/Approaching Companies/Campaigns/PythonScript/Real Script for Winter Campaign/booking_example.txt";
+OUTPUT_FILE = "/Volumes/Dario Porsche LaCie/ALL/Dario's Mac/Documents/Dario MAC Manual Backup (07th May 2017)/Businesses/-Businesses/Actual/SeasonAbroad/Approaching Companies/Campaigns/PythonScript/Real Script for Winter Campaign/hotels.csv";
 
 # TIME measuring defs
 def secondsToStr(t):
@@ -19,7 +21,7 @@ def timeToStr(t):
 
 
 line = "=" * 40
-
+xls_row = 0
 
 def log(s, elapsed=None):
     print(line)
@@ -119,26 +121,30 @@ def getEmails(link):
 
     reg = r'<?([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)>?'
     for match in re.findall(reg, doc):
-        if str(match) not in emails:
+        if str(match) not in emails and not isFakeEmail(match):
             emails.append(str(match))
 
     reg = r'<?([a-zA-Z0-9_.+-]+\(a\)[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)>?'
     for match in re.findall(reg, doc):
-        if str(match) not in emails:
+        if str(match) not in emails and not isFakeEmail(match):
             emails.append(str(match).replace("(a)", "@"))
 
     reg = r'<?([a-zA-Z0-9_.+-]+\[at\][a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)>?'
     for match in re.findall(reg, doc):
-        if str(match) not in emails:
+        if str(match) not in emails and not isFakeEmail(match):
             emails.append(str(match).replace("[at]", "@"))
 
     reg = r'<?([a-zA-Z0-9_.+-]+\[AT\][a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)>?'
     for match in re.findall(reg, doc):
-        if str(match) not in emails:
+        if str(match) not in emails and not isFakeEmail(match):
             emails.append(str(match).replace("[AT]", "@"))
 
     return emails
 
+def isFakeEmail(email):
+    return str(email).endswith(".png") \
+           or str(email).endswith(".jpg") \
+           or str(email).endswith(".jpeg")
 
 def fetchHotels(link):
     # maxPages = 10;
@@ -257,8 +263,14 @@ def fetchHotels(link):
             print(str(hotelLink) + " : " + str(emails))
 
             try:
-                writer.writerow({'HOTEL NAME': name.strip(), 'LINK': hotelLink.strip(), 'EMAILS': str(emails).strip(),
-                                 'RANK': str(rank).strip()})
+                # writer.writerow({'HOTEL NAME': name.strip(), 'LINK': hotelLink.strip(),
+                #                  'EMAILS': ",".join(str(emails).strip()),
+                #                  'RANK': str(rank).strip()})
+                worksheet.write(xls_row, 0,  name.strip())
+                worksheet.write(xls_row, 1,  hotelLink.strip())
+                worksheet.write(xls_row, 2,  ",".join(str(emails).strip()))
+                worksheet.write(xls_row, 3,  str(rank).strip())
+
             except:
                 print("Error: ", sys.exc_info()[0])
                 print(name)
@@ -289,7 +301,7 @@ def fetchHotels(link):
 start = time()
 
 # Open keywords file
-f = open("/Volumes/Dario Porsche LaCie/ALL/Dario's Mac/Documents/Dario MAC Manual Backup (07th May 2017)/Businesses/-Businesses/Actual/SeasonAbroad/Approaching Companies/Campaigns/PythonScript/Real Script for Winter Campaign/booking_example.txt", "r")
+f = open(INPUT_FILE, "r")
 
 user_agent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64)'
 header = {'User-Agent': user_agent}
@@ -302,24 +314,31 @@ bookingSession.headers.update(headers)
 generalSession = requests.Session()
 generalSession.headers.update(headers)
 
-# Loop through keywords and query booking.com
-with open("/Volumes/Dario Porsche LaCie/ALL/Dario's Mac/Documents/Dario MAC Manual Backup (07th May 2017)/Businesses/-Businesses/Actual/SeasonAbroad/Approaching Companies/Campaigns/PythonScript/Real Script for Winter Campaign/hotels.csv", "w", newline="") as csvfile:
-    fieldnames = ['HOTEL NAME', 'LINK', 'EMAILS', 'RANK']
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+# # Loop through keywords and query booking.com
+# with open(OUTPUT_FILE, "w", newline="") as csvfile:
+#     fieldnames = ['HOTEL NAME', 'LINK', 'EMAILS', 'RANK']
+#     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+#
+#     writer.writeheader()
+#
+#
+# # close excel file
+# csvfile.close()
 
-    writer.writeheader()
-    linkNo = 0
-    for link in f:
-        linkNo += 1
-        print("Processing link no. " + str(linkNo) + ".")
-        stamp = time()
-        # print(link.strip());
-        hotelList = fetchHotels(link.strip())
-    # close the file
-    f.close()
-
-# close excel file
-csvfile.close()
+# Create a workbook and add a worksheet.
+workbook = xlsxwriter.Workbook(OUTPUT_FILE)
+worksheet = workbook.add_worksheet()
+linkNo = 0
+for link in f:
+    linkNo += 1
+    print("Processing link no. " + str(linkNo) + ".")
+    stamp = time()
+    # print(link.strip());
+    hotelList = fetchHotels(link.strip())
+# close the file
+f.close()
+# close workbook
+workbook.close()
 endlog()
 
 
