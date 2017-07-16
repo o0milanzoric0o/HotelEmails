@@ -9,7 +9,13 @@ import sys
 import re
 
 INPUT_FILE = "/Volumes/Dario Porsche LaCie/ALL/Dario's Mac/Documents/Dario MAC Manual Backup (07th May 2017)/Businesses/-Businesses/Actual/SeasonAbroad/Approaching Companies/Campaigns/PythonScript/Real Script for Winter Campaign/booking_example.txt";
+# INPUT_FILE = "C:\\Users\\milan\\python\\input\\keywords_short.txt"
 OUTPUT_FILE = "/Volumes/Dario Porsche LaCie/ALL/Dario's Mac/Documents/Dario MAC Manual Backup (07th May 2017)/Businesses/-Businesses/Actual/SeasonAbroad/Approaching Companies/Campaigns/PythonScript/Real Script for Winter Campaign/hotels.csv";
+# OUTPUT_FILE = "C:\\Users\\milan\\python\\output\\hot.xlsx"
+
+# put the list of keywords (separated by space) to help find hotel webiste.
+ADDITIONAL_KEYWORDS = ""
+
 
 # TIME measuring defs
 def secondsToStr(t):
@@ -21,7 +27,7 @@ def timeToStr(t):
 
 
 line = "=" * 40
-xls_row = 0
+
 
 def log(s, elapsed=None):
     print(line)
@@ -104,7 +110,7 @@ def findContactPage(link):
     else:
         return (html.url + str(url))
 
-    # return None
+        # return None
 
 
 def getEmails(link):
@@ -141,22 +147,27 @@ def getEmails(link):
 
     return emails
 
+
 def isFakeEmail(email):
     return str(email).endswith(".png") \
            or str(email).endswith(".jpg") \
            or str(email).endswith(".jpeg")
+
 
 def fetchHotels(link):
     # maxPages = 10;
     namesFound = 0
     page = 1
     list = []
+    global xls_row
+    global xls_fail_row
+
     # Get hotels in our City reusing booking.com session
 
     html = bookingSession.get(link)
     # req = urllib.request.Request(link, None, headers);
     # html = urllib.request.urlopen(req);
-    while (True):
+    while True:
         stamp = time()
         print("Page: " + str(page))
         # Prepare result for processing
@@ -180,7 +191,7 @@ def fetchHotels(link):
             hotelLink = 'NOT FOUND'
             rank = 0
             try:
-                searchResult = search(name, stop=10)
+                searchResult = search(name + " " + ADDITIONAL_KEYWORDS, stop=10)
             except:
                 print("Error: ", sys.exc_info()[0])
                 print("While googling for: " + str(hotelLink))
@@ -257,6 +268,12 @@ def fetchHotels(link):
 
             if len(emails) == 0:
                 emails = errorMsg
+                worksheet_failed.write(xls_fail_row, 0, name.strip())
+                worksheet_failed.write(xls_fail_row, 1, hotelLink.strip())
+                worksheet_failed.write(xls_fail_row, 2, ", ".join(emails))
+                worksheet_failed.write(xls_fail_row, 3, str(rank).strip())
+                xls_fail_row = xls_fail_row + 1
+                continue
 
             list += [[name, hotelLink, str(emails), str(rank)]]
 
@@ -266,10 +283,11 @@ def fetchHotels(link):
                 # writer.writerow({'HOTEL NAME': name.strip(), 'LINK': hotelLink.strip(),
                 #                  'EMAILS': ",".join(str(emails).strip()),
                 #                  'RANK': str(rank).strip()})
-                worksheet.write(xls_row, 0,  name.strip())
-                worksheet.write(xls_row, 1,  hotelLink.strip())
-                worksheet.write(xls_row, 2,  ",".join(str(emails).strip()))
-                worksheet.write(xls_row, 3,  str(rank).strip())
+                worksheet.write(xls_row, 0, name.strip())
+                worksheet.write(xls_row, 1, hotelLink.strip())
+                worksheet.write(xls_row, 2, ", ".join(emails))
+                worksheet.write(xls_row, 3, str(rank).strip())
+                xls_row = xls_row + 1
 
             except:
                 print("Error: ", sys.exc_info()[0])
@@ -278,6 +296,9 @@ def fetchHotels(link):
         log("[" + str(page) + "]" + " Page processing time", time() - stamp)
 
         page = page + 1
+
+        if page == 3:
+            break
 
         # Find the base link for "next" page results
         element = bsObj.find('link', attrs={'rel': 'next'})
@@ -328,6 +349,10 @@ generalSession.headers.update(headers)
 # Create a workbook and add a worksheet.
 workbook = xlsxwriter.Workbook(OUTPUT_FILE)
 worksheet = workbook.add_worksheet()
+worksheet_failed = workbook.add_worksheet()
+xls_row = 0
+xls_fail_row = 0
+
 linkNo = 0
 for link in f:
     linkNo += 1
@@ -340,8 +365,3 @@ f.close()
 # close workbook
 workbook.close()
 endlog()
-
-
-
-
-
