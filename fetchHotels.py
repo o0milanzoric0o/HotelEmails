@@ -8,9 +8,9 @@ import requests
 import sys
 import re
 
-INPUT_FILE = "/Volumes/Dario Porsche LaCie/ALL/Dario's Mac/Documents/Dario MAC Manual Backup (07th May 2017)/Businesses/-Businesses/Actual/SeasonAbroad/Approaching Companies/Campaigns/PythonScript/Real Script for Winter Campaign/booking_example.txt";
+INPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/Bulgaria/bulgaria copy 1.txt"
 # INPUT_FILE = "C:\\Users\\milan\\python\\input\\keywords_short.txt"
-OUTPUT_FILE = "/Volumes/Dario Porsche LaCie/ALL/Dario's Mac/Documents/Dario MAC Manual Backup (07th May 2017)/Businesses/-Businesses/Actual/SeasonAbroad/Approaching Companies/Campaigns/PythonScript/Real Script for Winter Campaign/hotels.csv";
+OUTPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/Bulgaria/bulgaria_summer_1.xlsx"
 # OUTPUT_FILE = "C:\\Users\\milan\\python\\output\\hot.xlsx"
 
 # put the list of keywords (separated by space) to help find hotel webiste.
@@ -192,46 +192,68 @@ def fetchHotels(link):
             hotelLink = 'NOT FOUND'
             rank = 0
             try:
-                searchResult = search(ADDITIONAL_KEYWORDS_BEFORE + " " + name + " " + ADDITIONAL_KEYWORDS_AFTER, stop=10)
+                searchResult = search(ADDITIONAL_KEYWORDS_BEFORE + " " + name + " " + ADDITIONAL_KEYWORDS_AFTER, stop=20)
             except:
                 print("Error: ", sys.exc_info()[0])
                 print("While googling for: " + str(hotelLink))
                 continue
             for url in searchResult:
                 rank += 1
-                if "booking.com" in url:
-                    continue
-                if "facebook.com" in url:
-                    continue
-                if "tripadvisor." in url:
-                    continue
-                if "chamonix.net" in url:
-                    continue
-                if "ultimate-ski.com" in url:
-                    continue
                 if "agoda.com" in url:
+                    continue
+                if "airbnb." in url:
                     continue
                 if "bedandbreakfast.eu" in url:
                     continue
-                if "goibibo.com" in url:
+                if "bgaccommodations." in url:
                     continue
-                if "makemytrip.com" in url:
+                if "bgstay.com" in url:
                     continue
-                if "travelguru.com" in url:
+                if "booking.com" in url:
+                    continue
+                if "bulgarianproperties." in url:
+                    continue
+                if "chamonix.net" in url:
                     continue
                 if "cleartrip.com" in url:
                     continue
-                if "yatra.com" in url:
+                if "directbooking." in url:
+                    continue
+                if "expedia.com" in url:
+                    continue
+                if "facebook.com" in url:
+                    continue
+                if "goibibo.com" in url:
+                    continue
+                if "hotels.com" in url:
+                    continue
+                if "hotelscombined.com" in url:
+                    continue
+                if "j2ski.com" in url:
+                    continue
+                if "lonelyplanet." in url:
+                    continue
+                if "makemytrip.com" in url:
+                    continue
+                if "mountvacation.co.uk" in url:
                     continue
                 if "odalys-vacances.com" in url:
                     continue
                 if "odalys-vacation-rental.com" in url:
                     continue
-                if "www.hotels.com" in url:
+                if "plovdivhotels.com" in url:
                     continue
-                if "www.expedia.com" in url:
+                if "rooms.bg" in url:
                     continue
-                if "mountvacation.co.uk" in url:
+                if "travelguru.com" in url:
+                    continue
+                if "tripadvisor." in url:
+                    continue
+                if "ultimate-ski.com" in url:
+                    continue
+                if "yatra.com" in url:
+                    continue
+                if "youtube.com" in url:
                     continue
 
                 hotelLink = url
@@ -297,7 +319,7 @@ def fetchHotels(link):
         log("[" + str(page) + "]" + " Page processing time", time() - stamp)
 
         page = page + 1
-
+        # THESE TWO LINES BELOW ARE JUST FOR TEST, UNHASHTAG BELOW TWO TO RUN TEST
         if page == 3:
             break
 
