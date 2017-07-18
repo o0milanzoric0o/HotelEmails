@@ -14,7 +14,8 @@ OUTPUT_FILE = "/Volumes/Dario Porsche LaCie/ALL/Dario's Mac/Documents/Dario MAC 
 # OUTPUT_FILE = "C:\\Users\\milan\\python\\output\\hot.xlsx"
 
 # put the list of keywords (separated by space) to help find hotel webiste.
-ADDITIONAL_KEYWORDS = ""
+ADDITIONAL_KEYWORDS_BEFORE = "Hotel"
+ADDITIONAL_KEYWORDS_AFTER = "Bulgaria"
 
 
 # TIME measuring defs
@@ -191,7 +192,7 @@ def fetchHotels(link):
             hotelLink = 'NOT FOUND'
             rank = 0
             try:
-                searchResult = search(name + " " + ADDITIONAL_KEYWORDS, stop=10)
+                searchResult = search(ADDITIONAL_KEYWORDS_BEFORE + " " + name + " " + ADDITIONAL_KEYWORDS_AFTER, stop=10)
             except:
                 print("Error: ", sys.exc_info()[0])
                 print("While googling for: " + str(hotelLink))
