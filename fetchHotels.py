@@ -199,11 +199,17 @@ def fetchHotels(link):
                 continue
             for url in searchResult:
                 rank += 1
+                if "a-hotel.com" in url:
+                    continue
                 if "agoda.com" in url:
+                    continue
+                if "alltherooms.com" in url:
                     continue
                 if "airbnb." in url:
                     continue
                 if "bedandbreakfast.eu" in url:
+                    continue
+                if "bedroomvillas." in url:
                     continue
                 if "bgaccommodations." in url:
                     continue
@@ -219,7 +225,11 @@ def fetchHotels(link):
                     continue
                 if "directbooking." in url:
                     continue
-                if "expedia.com" in url:
+                if "directrooms.com" in url:
+                    continue
+                if "execstays.com" in url:
+                    continue
+                if "expedia." in url:
                     continue
                 if "facebook.com" in url:
                     continue
@@ -229,27 +239,65 @@ def fetchHotels(link):
                     continue
                 if "hotelscombined.com" in url:
                     continue
+                if "hotels." in url:
+                    continue
+                if "hikersbay." in url:
+                    continue
                 if "j2ski.com" in url:
                     continue
+                if "kayak." in url:
+                    continue
+                if "letsbookhotel.com" in url:
+                    continue
                 if "lonelyplanet." in url:
+                    continue
+                if "loveholidays.com" in url:
                     continue
                 if "makemytrip.com" in url:
                     continue
                 if "mountvacation.co.uk" in url:
                     continue
+                if "noviteimoti.com" in url:
+                    continue
                 if "odalys-vacances.com" in url:
                     continue
                 if "odalys-vacation-rental.com" in url:
                     continue
+                if "onetwotrip." in url:
+                    continue
+                if "pinterest." in url:
+                    continue
+                if "plaja.ro" in url:
+                    continue
                 if "plovdivhotels.com" in url:
+                    continue
+                if "priceline." in url:
+                    continue
+                if "rentalhomes.com" in url:
+                    continue
+                if "rentbyowner." in url:
                     continue
                 if "rooms.bg" in url:
                     continue
+                if "skiffor.com" in url:
+                    continue
                 if "travelguru.com" in url:
+                    continue
+                if "travelpoint-bg.com" in url:
                     continue
                 if "tripadvisor." in url:
                     continue
+                if "tripvizor." in url:
+                    continue
+                if "trivago." in url:
+                    continue
+                if "tropki.com" in url:
+                    continue
                 if "ultimate-ski.com" in url:
+                    continue
+                if "visitbulgaria.net" in url:
+                    continue
+                if "wikipedia." in url:
                     continue
                 if "yatra.com" in url:
                     continue
@@ -319,9 +367,9 @@ def fetchHotels(link):
         log("[" + str(page) + "]" + " Page processing time", time() - stamp)
 
         page = page + 1
-        # THESE TWO LINES BELOW ARE JUST FOR TEST, UNHASHTAG BELOW TWO TO RUN TEST
-        if page == 3:
-            break
+# THESE TWO LINES BELOW ARE JUST FOR TEST, UNHASHTAG BELOW TWO TO RUN TEST
+        #if page == 3:
+        #    break
 
         # Find the base link for "next" page results
         element = bsObj.find('link', attrs={'rel': 'next'})
