@@ -199,9 +199,13 @@ def fetchHotels(link):
                 continue
             for url in searchResult:
                 rank += 1
+                if "101hotels.ru" in url:
+                    continue
                 if "a-hotel.com" in url:
                     continue
                 if "agoda.com" in url:
+                    continue
+                if "albena.bg" in url:
                     continue
                 if "alltherooms.com" in url:
                     continue
@@ -213,9 +217,15 @@ def fetchHotels(link):
                     continue
                 if "atrapalo.com" in url:
                     continue
+                if "balkanholidays." in url:
+                    continue
+                if "beachbulgaria." in url:
+                    continue
                 if "bedandbreakfast.eu" in url:
                     continue
                 if "bedroomvillas." in url:
+                    continue
+                if "bestbgproperties." in url:
                     continue
                 if "bgaccommodations." in url:
                     continue
@@ -233,7 +243,11 @@ def fetchHotels(link):
                     continue
                 if "chamonix.net" in url:
                     continue
+                if "champtrip." in url:
+                    continue
                 if "cleartrip.com" in url:
+                    continue
+                if "destination-bg.com" in url:
                     continue
                 if "destinia." in url:
                     continue
@@ -263,13 +277,25 @@ def fetchHotels(link):
                     continue
                 if "homeaway.co.uk" in url:
                     continue
-                if "hotellook.com" in url:
+                if "hostelbookers." in url:
+                    continue
+                if "hostelsclub.com" in url:
                     continue
                 if "hostelworld." in url:
                     continue
+                if "hotelfizz.com" in url:
+                    continue
+                if "hotellook.com" in url:
+                    continue
                 if "hotels.com" in url:
                     continue
+                if "hotels.guide-bulgaria.com" in url:
+                    continue
+                if "hotels-in-bulgaria.com" in url:
+                    continue
                 if "hotelscombined.com" in url:
+                    continue
+                if "hotelsclick.com" in url:
                     continue
                 if "hotel." in url:
                     continue
@@ -287,13 +313,21 @@ def fetchHotels(link):
                     continue
                 if "infotel.co.uk" in url:
                     continue
+                if "investbulgaria.com" in url:
+                    continue
                 if "j2ski.com" in url:
                     continue
+                if "jetcost.co.uk" in url:
+                    continue
                 if "kayak." in url:
+                    continue
+                if "krapets.com" in url:
                     continue
                 if "leadingcourses.com" in url:
                     continue
                 if "letsbookhotel.com" in url:
+                    continue
+                if "limba.com" in url:
                     continue
                 if "lonelyplanet." in url:
                     continue
@@ -309,6 +343,8 @@ def fetchHotels(link):
                     continue
                 if "odalys-vacation-rental.com" in url:
                     continue
+                if "old33.hotelsbg.net" in url:
+                    continue
                 if "onetwotrip." in url:
                     continue
                 if "orbitz.com" in url:
@@ -321,6 +357,8 @@ def fetchHotels(link):
                     continue
                 if "priceline." in url:
                     continue
+                if "purpletravel.co.uk" in url:
+                    continue
                 if "quehoteles.com" in url:
                     continue
                 if "readytotrip.com" in url:
@@ -330,6 +368,8 @@ def fetchHotels(link):
                 if "rentalhomes.com" in url:
                     continue
                 if "rentbyowner." in url:
+                    continue
+                if "rivierabulgaria.com" in url:
                     continue
                 if "roomex.com" in url:
                     continue
@@ -343,7 +383,11 @@ def fetchHotels(link):
                     continue
                 if "soyoutravel.com" in url:
                     continue
+                if "sunshine.co.uk" in url:
+                    continue
                 if "tiscover.com" in url:
+                    continue
+                if "tophotels.org" in url:
                     continue
                 if "travelguru.com" in url:
                     continue
