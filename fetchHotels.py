@@ -8,14 +8,14 @@ import requests
 import sys
 import re
 
-INPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/Bulgaria/bulgaria copy 1.txt"
+INPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/Austria/Austria copy 40.txt"
 # INPUT_FILE = "C:\\Users\\milan\\python\\input\\keywords_short.txt"
-OUTPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/Bulgaria/bulgaria_summer_1.xlsx"
+OUTPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/Austria/austria_winter_40.xlsx"
 # OUTPUT_FILE = "C:\\Users\\milan\\python\\output\\hot.xlsx"
 
 # put the list of keywords (separated by space) to help find hotel webiste.
 ADDITIONAL_KEYWORDS_BEFORE = "Hotel"
-ADDITIONAL_KEYWORDS_AFTER = "Bulgaria"
+ADDITIONAL_KEYWORDS_AFTER = "Austria"
 
 
 # TIME measuring defs
@@ -205,7 +205,13 @@ def fetchHotels(link):
                     continue
                 if "alltherooms.com" in url:
                     continue
+                if "andorraresorts.com" in url:
+                    continue
                 if "airbnb." in url:
+                    continue
+                if "arinsal.co.uk" in url:
+                    continue
+                if "atrapalo.com" in url:
                     continue
                 if "bedandbreakfast.eu" in url:
                     continue
@@ -217,15 +223,29 @@ def fetchHotels(link):
                     continue
                 if "booking.com" in url:
                     continue
+                if "booking-hotel-accommodation.com" in url:
+                    continue
+                if "budgetplaces.com" in url:
+                    continue
                 if "bulgarianproperties." in url:
+                    continue
+                if "centraldereservas.com" in url:
                     continue
                 if "chamonix.net" in url:
                     continue
                 if "cleartrip.com" in url:
                     continue
+                if "destinia." in url:
+                    continue
                 if "directbooking." in url:
                     continue
                 if "directrooms.com" in url:
+                    continue
+                if "ebookers.com" in url:
+                    continue
+                if "esquiades.com" in url:
+                    continue
+                if "europeanexplorer." in url:
                     continue
                 if "execstays.com" in url:
                     continue
@@ -233,19 +253,45 @@ def fetchHotels(link):
                     continue
                 if "facebook.com" in url:
                     continue
+                if "findmeahotelroom.com" in url:
+                    continue
+                if "fivestaralliance.com" in url:
+                    continue
                 if "goibibo.com" in url:
+                    continue
+                if "holidaycheck.de" in url:
+                    continue
+                if "homeaway.co.uk" in url:
+                    continue
+                if "hotellook.com" in url:
+                    continue
+                if "hostelworld." in url:
                     continue
                 if "hotels.com" in url:
                     continue
                 if "hotelscombined.com" in url:
                     continue
+                if "hotel." in url:
+                    continue
+                if "hotelchains." in url:
+                    continue
                 if "hotels." in url:
                     continue
+                if "hotelseurope.com" in url:
+                    continue
                 if "hikersbay." in url:
+                    continue
+                if "hrs." in url:
+                    continue
+                if "ihr24.com" in url:
+                    continue
+                if "infotel.co.uk" in url:
                     continue
                 if "j2ski.com" in url:
                     continue
                 if "kayak." in url:
+                    continue
+                if "leadingcourses.com" in url:
                     continue
                 if "letsbookhotel.com" in url:
                     continue
@@ -265,6 +311,8 @@ def fetchHotels(link):
                     continue
                 if "onetwotrip." in url:
                     continue
+                if "orbitz.com" in url:
+                    continue
                 if "pinterest." in url:
                     continue
                 if "plaja.ro" in url:
@@ -273,17 +321,41 @@ def fetchHotels(link):
                     continue
                 if "priceline." in url:
                     continue
+                if "quehoteles.com" in url:
+                    continue
+                if "readytotrip.com" in url:
+                    continue
+                if "reinisfischer.com" in url:
+                    continue
                 if "rentalhomes.com" in url:
                     continue
                 if "rentbyowner." in url:
                     continue
+                if "roomex.com" in url:
+                    continue
                 if "rooms.bg" in url:
+                    continue
+                if "rumbo." in url:
+                    continue
+                if "shutterstock." in url:
                     continue
                 if "skiffor.com" in url:
                     continue
+                if "soyoutravel.com" in url:
+                    continue
+                if "tiscover.com" in url:
+                    continue
                 if "travelguru.com" in url:
                     continue
+                if "travelko.com" in url:
+                    continue
+                if "travelocity.com" in url:
+                    continue
                 if "travelpoint-bg.com" in url:
+                    continue
+                if "travelport.cz" in url:
+                    continue
+                if "travelrepublic.co.uk" in url:
                     continue
                 if "tripadvisor." in url:
                     continue
@@ -292,6 +364,8 @@ def fetchHotels(link):
                 if "trivago." in url:
                     continue
                 if "tropki.com" in url:
+                    continue
+                if "turistika.cz" in url:
                     continue
                 if "ultimate-ski.com" in url:
                     continue
