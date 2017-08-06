@@ -12,14 +12,14 @@ import Logging
 import EmailUtils
 import ContactPageUtils
 
-INPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/Austria/Austria copy 40.txt"
+INPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/Belgium/Belgium copy 1.txt"
 # INPUT_FILE = "C:\\Users\\milan\\python\\input\\keywords_short.txt"
-OUTPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/Austria/austria_winter_40.xlsx"
+OUTPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/Belgium/belgium_winter_1.xlsx"
 # OUTPUT_FILE = "C:\\Users\\milan\\python\\output\\hot.xlsx"
 
 # put the list of keywords (separated by space) to help find hotel webiste.
 ADDITIONAL_KEYWORDS_BEFORE = "Hotel"
-ADDITIONAL_KEYWORDS_AFTER = "Austria"
+ADDITIONAL_KEYWORDS_AFTER = "Belgium"
 
 
 def fetch_hotels(hotels_link):
@@ -137,7 +137,7 @@ def fetch_hotels(hotels_link):
 
         page = page + 1
         # THESE TWO LINES BELOW ARE JUST FOR TEST, UNHASHTAG BELOW TWO TO RUN TEST
-        # if page == 3:
+        #if page == 3:
         #    break
 
         # Find the base link for "next" page results
