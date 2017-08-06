@@ -1,12 +1,16 @@
 # import required modules
-from datetime import timedelta
 from bs4 import BeautifulSoup
 from google import search
-from time import time, localtime, strftime
+from time import time
 import xlsxwriter
 import requests
 import sys
 import re
+
+import ExclusionList
+import Logging
+import EmailUtils
+import ContactPageUtils
 
 INPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/Austria/Austria copy 40.txt"
 # INPUT_FILE = "C:\\Users\\milan\\python\\input\\keywords_short.txt"
@@ -18,146 +22,9 @@ ADDITIONAL_KEYWORDS_BEFORE = "Hotel"
 ADDITIONAL_KEYWORDS_AFTER = "Austria"
 
 
-# TIME measuring defs
-def secondsToStr(t):
-    return str(timedelta(seconds=t))
-
-
-def timeToStr(t):
-    return strftime("%H:%M:%S", t)
-
-
-line = "=" * 40
-
-
-def log(s, elapsed=None):
-    print(line)
-    print(timeToStr(localtime()), '-', s)
-    if elapsed:
-        print("Elapsed time:", elapsed)
-    print(line)
-    print()
-
-
-def endlog():
-    end = time()
-    elapsed = end - start
-    log("End Program", secondsToStr(elapsed))
-
-
-def elapsedFrom(stamp):
-    end = time()
-    elapsed = end - stamp
-    log("Elapsed time: ", secondsToStr(elapsed))
-
-
-def now():
-    return secondsToStr(time())
-
-
-# END TIME measuring defs
-
-def findContactPage(link):
-    # find all links on the page
-    # req = urllib.request.Request(link, None, headers);
-    # html = urllib.request.urlopen(req);
-
-    html = generalSession.get(link)
-
-    bsObj = BeautifulSoup(html.text, "html.parser")
-    links = bsObj.findAll('a')
-    base = bsObj.find('base')
-    baseUrl = None
-    if base is not None:
-        if base.has_attr('href'):
-            baseUrl = base['href'].strip()
-    url = None
-    for link in links:
-        # print(link);
-        if len(link.contents) == 0:
-            continue
-        content = str(link.contents[0]).strip()
-        # print(content);
-        if content is not None:
-            content = content.strip()
-        href = None
-        if link.has_attr('href'):
-            href = link['href']
-        title = None
-        if link.has_attr('title'):
-            title = link['title']
-        # print(str(content) + ">" + str(href) + ">" + str(title));
-        if "contact" in str(link):
-            url = str(href).strip()
-            break
-        if "Contact" in str(link):
-            url = str(href).strip()
-            break
-        if "kontakt" in str(link):
-            url = str(href).strip()
-            break
-        if "Kontakt" in str(link):
-            url = str(href).strip()
-            break
-
-    if "http" in str(url):
-        return str(url)
-
-    if "www" in str(url):
-        return str(url)
-
-    if not baseUrl is None:
-        return (baseUrl + str(url))
-    else:
-        return (html.url + str(url))
-
-        # return None
-
-
-def getEmails(link):
-    if link is None:
-        return []
-
-    emails = []
-
-    # req = urllib.request.Request(link, None, headers);
-    # html = urllib.request.urlopen(req);
-
-    html = generalSession.get(link)
-    doc = bytes(str(html.text), 'utf-8').decode('unicode_escape')
-
-    reg = r'<?([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)>?'
-    for match in re.findall(reg, doc):
-        if str(match) not in emails and not isFakeEmail(match):
-            emails.append(str(match))
-
-    reg = r'<?([a-zA-Z0-9_.+-]+\(a\)[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)>?'
-    for match in re.findall(reg, doc):
-        if str(match) not in emails and not isFakeEmail(match):
-            emails.append(str(match).replace("(a)", "@"))
-
-    reg = r'<?([a-zA-Z0-9_.+-]+\[at\][a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)>?'
-    for match in re.findall(reg, doc):
-        if str(match) not in emails and not isFakeEmail(match):
-            emails.append(str(match).replace("[at]", "@"))
-
-    reg = r'<?([a-zA-Z0-9_.+-]+\[AT\][a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)>?'
-    for match in re.findall(reg, doc):
-        if str(match) not in emails and not isFakeEmail(match):
-            emails.append(str(match).replace("[AT]", "@"))
-
-    return emails
-
-
-def isFakeEmail(email):
-    return str(email).endswith(".png") \
-           or str(email).endswith(".jpg") \
-           or str(email).endswith(".jpeg")
-
-
-def fetchHotels(link):
+def fetch_hotels(hotels_link):
     # maxPages = 10;
-    namesFound = 0
+    names_found = 0
     page = 1
     list = []
     global xls_row
@@ -165,7 +32,7 @@ def fetchHotels(link):
 
     # Get hotels in our City reusing booking.com session
 
-    html = bookingSession.get(link)
+    html = bookingSession.get(hotels_link)
     # req = urllib.request.Request(link, None, headers);
     # html = urllib.request.urlopen(req);
     while True:
@@ -186,350 +53,78 @@ def fetchHotels(link):
         for nameElement in hotelNameElements:
             # print(nameElement.contents[0].strip(), "");
             name = nameElement.contents[0].strip()
-            namesFound += 1
+            names_found += 1
             # Try to find a web page
             # Make a google search
-            hotelLink = 'NOT FOUND'
+            hotel_link = 'NOT FOUND'
             rank = 0
             try:
-                searchResult = search(ADDITIONAL_KEYWORDS_BEFORE + " " + name + " " + ADDITIONAL_KEYWORDS_AFTER, stop=20)
+                searchResult = search(ADDITIONAL_KEYWORDS_BEFORE + " " + name + " " + ADDITIONAL_KEYWORDS_AFTER,
+                                      stop=20)
             except:
                 print("Error: ", sys.exc_info()[0])
-                print("While googling for: " + str(hotelLink))
+                print("While googling for: " + str(hotel_link))
                 continue
             for url in searchResult:
                 rank += 1
-                if "101hotels.ru" in url:
-                    continue
-                if "a-hotel.com" in url:
-                    continue
-                if "agoda.com" in url:
-                    continue
-                if "albena.bg" in url:
-                    continue
-                if "alltherooms.com" in url:
-                    continue
-                if "amfostacolo.ro" in url:
-                    continue
-                if "andorraresorts.com" in url:
-                    continue
-                if "airbnb." in url:
-                    continue
-                if "arinsal.co.uk" in url:
-                    continue
-                if "atrapalo.com" in url:
-                    continue
-                if "balkanholidays." in url:
-                    continue
-                if "balkantourbox.com" in url:
-                    continue
-                if "beachbulgaria." in url:
-                    continue
-                if "bedandbreakfast.eu" in url:
-                    continue
-                if "bedroomvillas." in url:
-                    continue
-                if "bestbgproperties." in url:
-                    continue
-                if "bgaccommodations." in url:
-                    continue
-                if "bgstay.com" in url:
-                    continue
-                if "booking.com" in url:
-                    continue
-                if "booking-hotel-accommodation.com" in url:
-                    continue
-                if "budgetplaces.com" in url:
-                    continue
-                if "bulgarholidays.uk" in url:
-                    continue
-                if "bulgariabeachresorts.com" in url:
-                    continue
-                if "bulgarianestates.org" in url:
-                    continue
-                if "bulgarianproperties." in url:
-                    continue
-                if "bulgariatour.cz" in url:
-                    continue
-                if "centraldereservas.com" in url:
-                    continue
-                if "chamonix.net" in url:
-                    continue
-                if "champtrip." in url:
-                    continue
-                if "chiangdao.com" in url:
-                    continue
-                if "cleartrip.com" in url:
-                    continue
-                if "destination-bg.com" in url:
-                    continue
-                if "destinia." in url:
-                    continue
-                if "directbooking." in url:
-                    continue
-                if "directrooms.com" in url:
-                    continue
-                if "eatstaylovebulgaria.com" in url:
-                    continue
-                if "ebookers.com" in url:
-                    continue
-                if "esquiades.com" in url:
-                    continue
-                if "europeanexplorer." in url:
-                    continue
-                if "execstays.com" in url:
-                    continue
-                if "expedia." in url:
-                    continue
-                if "facebook.com" in url:
-                    continue
-                if "find-bulgaria.com" in url:
-                    continue
-                if "findmeahotelroom.com" in url:
-                    continue
-                if "firstchoice.co.uk" in url:
-                    continue
-                if "fischer.cz" in url:
-                    continue
-                if "fivestaralliance.com" in url:
-                    continue
-                if "gogo.bg" in url:
-                    continue
-                if "goibibo.com" in url:
-                    continue
-                if "holidaycheck.de" in url:
-                    continue
-                if "homeaway.co.uk" in url:
-                    continue
-                if "hostelbookers." in url:
-                    continue
-                if "hoteles.com" in url:
-                    continue
-                if "hostelsclub.com" in url:
-                    continue
-                if "hostelworld." in url:
-                    continue
-                if "hotelfizz.com" in url:
-                    continue
-                if "hotellook.com" in url:
-                    continue
-                if "hotelopia.com" in url:
-                    continue
-                if "hotels.com" in url:
-                    continue
-                if "hotels.guide-bulgaria.com" in url:
-                    continue
-                if "hotels-in-bulgaria.com" in url:
-                    continue
-                if "hotelscombined.com" in url:
-                    continue
-                if "hotelsclick.com" in url:
-                    continue
-                if "hotel." in url:
-                    continue
-                if "hotelchains." in url:
-                    continue
-                if "hotels." in url:
-                    continue
-                if "hotelseurope.com" in url:
-                    continue
-                if "hikersbay." in url:
-                    continue
-                if "hrs." in url:
-                    continue
-                if "ihr24.com" in url:
-                    continue
-                if "infotel.co.uk" in url:
-                    continue
-                if "investbulgaria.com" in url:
-                    continue
-                if "ixigo.com" in url:
-                    continue
-                if "j2ski.com" in url:
-                    continue
-                if "jetcost.co.uk" in url:
-                    continue
-                if "kayak." in url:
-                    continue
-                if "krapets.com" in url:
-                    continue
-                if "lastminute.com" in url:
-                    continue
-                if "leadingcourses.com" in url:
-                    continue
-                if "letsbookhotel.com" in url:
-                    continue
-                if "limba.com" in url:
-                    continue
-                if "lonelyplanet." in url:
-                    continue
-                if "loveholidays.com" in url:
-                    continue
-                if "makemytrip.com" in url:
-                    continue
-                if "mountvacation.co.uk" in url:
-                    continue
-                if "noviteimoti.com" in url:
-                    continue
-                if "odalys-vacances.com" in url:
-                    continue
-                if "odalys-vacation-rental.com" in url:
-                    continue
-                if "old33.hotelsbg.net" in url:
-                    continue
-                if "onetwotrip." in url:
-                    continue
-                if "orbitz.com" in url:
-                    continue
-                if "oyster.com" in url:
-                    continue
-                if "paradise.ro" in url:
-                    continue
-                if "pinterest." in url:
-                    continue
-                if "plaja.ro" in url:
-                    continue
-                if "plovdivhotels.com" in url:
-                    continue
-                if "priceline." in url:
-                    continue
-                if "purpletravel.co.uk" in url:
-                    continue
-                if "quehoteles.com" in url:
-                    continue
-                if "readytotrip.com" in url:
-                    continue
-                if "reinisfischer.com" in url:
-                    continue
-                if "rentalhomes.com" in url:
-                    continue
-                if "rentbyowner." in url:
-                    continue
-                if "renthome.bg" in url:
-                    continue
-                if "riu.com" in url:
-                    continue
-                if "rivierabulgaria.com" in url:
-                    continue
-                if "roomdi.com" in url:
-                    continue
-                if "roomex.com" in url:
-                    continue
-                if "rooms.bg" in url:
-                    continue
-                if "rumbo." in url:
-                    continue
-                if "shutterstock." in url:
-                    continue
-                if "skiffor.com" in url:
-                    continue
-                if "skiplagged." in url:
-                    continue
-                if "soyoutravel.com" in url:
-                    continue
-                if "star-tur.com" in url:
-                    continue
-                if "sunshine.co.uk" in url:
-                    continue
-                if "thomson.co.uk" in url:
-                    continue
-                if "tiscover.com" in url:
-                    continue
-                if "tophotels.org" in url:
-                    continue
-                if "tourister.ru" in url:
-                    continue
-                if "travelguru.com" in url:
-                    continue
-                if "travelko.com" in url:
-                    continue
-                if "travelocity.com" in url:
-                    continue
-                if "travelpoint-bg.com" in url:
-                    continue
-                if "travelport.cz" in url:
-                    continue
-                if "travelrepublic.co.uk" in url:
-                    continue
-                if "travelweekly.com" in url:
-                    continue
-                if "tripadvisor." in url:
-                    continue
-                if "tripvizor." in url:
-                    continue
-                if "trivago." in url:
-                    continue
-                if "tropki.com" in url:
-                    continue
-                if "turistika.cz" in url:
-                    continue
-                if "ultimate-ski.com" in url:
-                    continue
-                if "visitbulgaria.net" in url:
-                    continue
-                if "wego." in url:
-                    continue
-                if "wikipedia." in url:
-                    continue
-                if "yatra.com" in url:
-                    continue
-                if "yelp." in url:
-                    continue
-                if "youtube.com" in url:
+                if ExclusionList.is_excluded(url):
                     continue
 
-                hotelLink = url
+                hotel_link = url
                 break
 
             emails = []
-            errorMsg = ['NOT FOUND']
-            errorOccured = False
+            error_msg = ['NOT FOUND']
+            error_occurred = False
             try:
-                emails = getEmails(hotelLink)
+                html = generalSession.get(hotel_link)
+                emails = EmailUtils.extract_emails(html)
             except:
                 print("Error: ", sys.exc_info()[0])
-                print("While getting emails from: " + str(hotelLink))
-                errorMsg.append("Get emails from main page: " + str(sys.exc_info()[0]))
-                errorOccured = True
+                print("While getting emails from: " + str(hotel_link))
+                error_msg.append("Get emails from main page: " + str(sys.exc_info()[0]))
+                error_occurred = True
 
-            contactPage = None
+            contact_page = None
 
-            if len(emails) == 0 and not errorOccured:
+            if len(emails) == 0 and not error_occurred:
                 try:
-                    contactPage = findContactPage(hotelLink)
+                    html = generalSession.get(hotel_link)
+                    contact_page = ContactPageUtils.find_contact_page(html)
                 except:
                     print("Error: ", sys.exc_info()[0])
-                    print("While getting contact page from: " + str(hotelLink))
-                    errorMsg.append("Get contact page: " + str(sys.exc_info()[0]))
-                    errorOccured = True
+                    print("While getting contact page from: " + str(hotel_link))
+                    error_msg.append("Get contact page: " + str(sys.exc_info()[0]))
+                    error_occurred = True
 
-            if not contactPage is None and len(emails) == 0 and not errorOccured:
+            if not contact_page is None and len(emails) == 0 and not error_occurred:
                 try:
-                    emails = getEmails(contactPage)
+                    html = generalSession.get(contact_page)
+                    emails = EmailUtils.extract_emails(html)
                 except:
                     print("Error: ", sys.exc_info()[0])
-                    print("While getting emails from: " + str(contactPage))
-                    errorMsg.append("Get emails from contact page: " + str(sys.exc_info()[0]))
+                    print("While getting emails from: " + str(contact_page))
+                    error_msg.append("Get emails from contact page: " + str(sys.exc_info()[0]))
 
             if len(emails) == 0:
-                emails = errorMsg
+                emails = error_msg
                 worksheet_failed.write(xls_fail_row, 0, name.strip())
-                worksheet_failed.write(xls_fail_row, 1, hotelLink.strip())
+                worksheet_failed.write(xls_fail_row, 1, hotel_link.strip())
                 worksheet_failed.write(xls_fail_row, 2, ", ".join(emails))
                 worksheet_failed.write(xls_fail_row, 3, str(rank).strip())
                 xls_fail_row = xls_fail_row + 1
                 continue
 
-            list += [[name, hotelLink, str(emails), str(rank)]]
+            list += [[name, hotel_link, str(emails), str(rank)]]
 
-            print(str(hotelLink) + " : " + str(emails))
+            print(str(hotel_link) + " : " + str(emails))
 
             try:
                 # writer.writerow({'HOTEL NAME': name.strip(), 'LINK': hotelLink.strip(),
                 #                  'EMAILS': ",".join(str(emails).strip()),
                 #                  'RANK': str(rank).strip()})
                 worksheet.write(xls_row, 0, name.strip())
-                worksheet.write(xls_row, 1, hotelLink.strip())
+                worksheet.write(xls_row, 1, hotel_link.strip())
                 worksheet.write(xls_row, 2, ", ".join(emails))
                 worksheet.write(xls_row, 3, str(rank).strip())
                 xls_row = xls_row + 1
@@ -538,18 +133,18 @@ def fetchHotels(link):
                 print("Error: ", sys.exc_info()[0])
                 print(name)
 
-        log("[" + str(page) + "]" + " Page processing time", time() - stamp)
+        Logging.log("[" + str(page) + "]" + " Page processing time", time() - stamp)
 
         page = page + 1
-# THESE TWO LINES BELOW ARE JUST FOR TEST, UNHASHTAG BELOW TWO TO RUN TEST
-        #if page == 3:
+        # THESE TWO LINES BELOW ARE JUST FOR TEST, UNHASHTAG BELOW TWO TO RUN TEST
+        # if page == 3:
         #    break
 
         # Find the base link for "next" page results
         element = bsObj.find('link', attrs={'rel': 'next'})
 
         if element:
-            baseLinkForNext = element['href']
+            base_link_for_next = element['href']
         else:
             break
 
@@ -558,7 +153,7 @@ def fetchHotels(link):
         # req = urllib.request.Request(baseLinkForNext, None, headers);
         # html = urllib.request.urlopen(req);
 
-        html = bookingSession.get(baseLinkForNext)
+        html = bookingSession.get(base_link_for_next)
 
     # Return the number of hotel names found
     return list
@@ -580,17 +175,6 @@ bookingSession.headers.update(headers)
 generalSession = requests.Session()
 generalSession.headers.update(headers)
 
-# # Loop through keywords and query booking.com
-# with open(OUTPUT_FILE, "w", newline="") as csvfile:
-#     fieldnames = ['HOTEL NAME', 'LINK', 'EMAILS', 'RANK']
-#     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-#
-#     writer.writeheader()
-#
-#
-# # close excel file
-# csvfile.close()
-
 # Create a workbook and add a worksheet.
 workbook = xlsxwriter.Workbook(OUTPUT_FILE)
 worksheet = workbook.add_worksheet()
@@ -604,9 +188,9 @@ for link in f:
     print("Processing link no. " + str(linkNo) + ".")
     stamp = time()
     # print(link.strip());
-    hotelList = fetchHotels(link.strip())
+    hotelList = fetch_hotels(link.strip())
 # close the file
 f.close()
 # close workbook
 workbook.close()
-endlog()
+Logging.end_log(start)
