@@ -12,14 +12,14 @@ import Logging
 import EmailUtils
 import ContactPageUtils
 
-INPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/Austria - can/Austria copy 1.1.txt"
+INPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/Finland - can/Finland copy 8.txt"
 # INPUT_FILE = "C:\\Users\\milan\\python\\input\\keywords_short.txt"
-OUTPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/Austria - can/austria_winter_1.1.xlsx"
+OUTPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/Finland - can/finland_winter_8.xlsx"
 # OUTPUT_FILE = "C:\\Users\\milan\\python\\output\\hot.xlsx"
 
 # put the list of keywords (separated by space) to help find hotel webiste.
 ADDITIONAL_KEYWORDS_BEFORE = "Hotel"
-ADDITIONAL_KEYWORDS_AFTER = "Austria"
+ADDITIONAL_KEYWORDS_AFTER = "Finland"
 
 
 def fetch_hotels(hotels_link):
