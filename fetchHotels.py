@@ -12,9 +12,9 @@ import Logging
 import EmailUtils
 import ContactPageUtils
 
-INPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/France - can/France copy 8.txt"
+INPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/France - can/France copy 23.txt"
 # INPUT_FILE = "C:\\Users\\milan\\python\\input\\keywords_short.txt"
-OUTPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/France - can/france_winter_8.xlsx"
+OUTPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/France - can/france_winter_23.xlsx"
 # OUTPUT_FILE = "C:\\Users\\milan\\python\\output\\hot.xlsx"
 
 # put the list of keywords (separated by space) to help find hotel webiste.
