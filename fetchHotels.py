@@ -12,14 +12,14 @@ import Logging
 import EmailUtils
 import ContactPageUtils
 
-INPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/France - can/France copy 23.txt"
+INPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/Spain - can/Spain copy 5.txt"
 # INPUT_FILE = "C:\\Users\\milan\\python\\input\\keywords_short.txt"
-OUTPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/France - can/france_winter_23.xlsx"
+OUTPUT_FILE = "/Users/DarioZoric-S/Documents/DZ TEMP/2) Sept. 2017 (Ski Resorts)/Spain - can/Spain_winter_5.xlsx"
 # OUTPUT_FILE = "C:\\Users\\milan\\python\\output\\hot.xlsx"
 
 # put the list of keywords (separated by space) to help find hotel webiste.
 ADDITIONAL_KEYWORDS_BEFORE = "Hotel"
-ADDITIONAL_KEYWORDS_AFTER = "France"
+ADDITIONAL_KEYWORDS_AFTER = "Spain"
 
 
 def fetch_hotels(hotels_link):
@@ -137,8 +137,8 @@ def fetch_hotels(hotels_link):
 
         page = page + 1
         # THESE TWO LINES BELOW ARE JUST FOR TEST, UNHASHTAG BELOW TWO TO RUN TEST
-        #if page == 3:
-        #    break
+        #if page == 4:
+        #  break
 
         # Find the base link for "next" page results
         element = bsObj.find('link', attrs={'rel': 'next'})
